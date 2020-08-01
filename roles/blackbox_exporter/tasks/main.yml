@@ -1,0 +1,91 @@
+---
+# tasks file for blackbox_exporter
+
+- name: Install epel Repo
+  yum:
+    name: epel-release
+    state: present
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Unarchive a file that needs to be downloaded
+  unarchive:
+    src: https://github.com/prometheus/blackbox_exporter/releases/download/v0.16.0/blackbox_exporter-0.16.0.linux-amd64.tar.gz
+    dest: /tmp/
+    #list_files: true
+    remote_src: yes
+  register: result
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Copy blackbox_exporter binary to PATH
+  copy:
+    src: /tmp/blackbox_exporter-0.16.0.linux-amd64/blackbox_exporter
+    dest: /usr/local/bin/blackbox_exporter
+    owner: root
+    group: root
+    mode: '0755'
+    remote_src: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Create a directory if it does not exist
+  file:
+    path: /etc/blackbox_exporter
+    state: directory
+    mode: '0755'
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Copy blackbox_exporter Configuration file
+  copy:
+    src: blackbox.yml
+    dest: /etc/blackbox_exporter
+    owner: root
+    group: root
+    mode: '0644'
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+  notify:
+    - restart-blackbox-exporter
+
+- name: Copy blackbox_exporter Systemd
+  copy:
+    src: blackbox_exporter.service
+    dest: /etc/systemd/system/blackbox_exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - restart-blackbox-exporter
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Just force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Start service blackbox exporter, if not started
+  service:
+    name: blackbox_exporter
+    state: started
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Enable service blackbox exporter, and not touch the state
+  service:
+    name: blackbox_exporter
+    enabled: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"

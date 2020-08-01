@@ -1,0 +1,21 @@
+[Unit]
+Description=Consul-Exporter
+Documentation=https://github.com/prometheus/consul_exporter.git
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/local/bin/consul_exporter \
+  --consul.server=localhost:8500 \
+  --web.listen-address=:9107 \
+  --web.telemetry-path=/metrics
+
+SyslogIdentifier=consul_exporter
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

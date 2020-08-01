@@ -1,0 +1,16 @@
+---
+# tasks file for nginx
+
+- name: Install nginx
+  yum:
+    name:
+      - nginx
+    state: present
+  when: 
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Start service nginx, if not started
+  service:
+    name: nginx
+    state: started

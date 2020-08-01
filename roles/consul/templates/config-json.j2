@@ -1,0 +1,43 @@
+{% if ROLE|string() == hostvars[inventory_hostname]['type']|string() %}
+{
+    "bootstrap": true,
+    "bind_addr": "{{ ansible_default_ipv4.address }}",
+    "server": true,
+    "datacenter": "{{ DATACENTER }}",
+    "data_dir": "/var/consul",
+    "addresses" : {
+    "http": "0.0.0.0"
+  },
+    "encrypt": "{{ ENCRYPTION_KEY }}",
+    "log_level": "INFO",
+    "enable_syslog": true,
+    "ui": true
+}
+{% else %}
+{
+    "leave_on_terminate": true,
+    "server" : false,
+    "datacenter": "{{ DATACENTER }}",
+    "data_dir": "/var/consul",
+    "encrypt": "{{ ENCRYPTION_KEY }}",
+{% if NODECOUNT | int > 0 %}
+    "start_join":  [{{ NODELIST }}],
+{% else %}
+    "start_join":  ["{{ CONSUL_SERVER_IP }}"],
+{% endif %}
+    "dns_config": {
+        "allow_stale": true,
+        "max_stale": "15s"
+    },
+    "recursors" : ["169.254.169.254"],
+    "retry_interval": "10s",
+    "retry_max": 100,
+    "ports": {
+        "dns": 53
+    },
+    "addresses": {
+        "http": "0.0.0.0",
+        "dns": "0.0.0.0"
+    }
+}
+{% endif %}

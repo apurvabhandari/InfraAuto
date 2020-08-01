@@ -1,0 +1,68 @@
+---
+# tasks file for redis_exporter
+- name: Install epel Repo
+  yum:
+    name: epel-release
+    state: present
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Unarchive a file that needs to be downloaded
+  unarchive:
+    src: https://github.com/oliver006/redis_exporter/releases/download/v1.6.0/redis_exporter-v1.6.0.linux-amd64.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  register: result
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Copy redis_exporter binary to PATH
+  copy:
+    src: /tmp/redis_exporter-v1.6.0.linux-amd64/redis_exporter
+    dest: /usr/local/bin/redis_exporter
+    owner: root
+    group: root
+    mode: '0755'
+    remote_src: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Copy redis_exporter Systemd
+  template:
+    src: redis_exporter_service.j2
+    dest: /etc/systemd/system/redis_exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - restart-redis-exporter
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Just force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Start service redis exporter, if not started
+  service:
+    name: redis_exporter
+    state: started
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Enable service redis exporter, and not touch the state
+  service:
+    name: redis_exporter
+    enabled: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+  ignore_errors: True

@@ -1,0 +1,13 @@
+---
+# tasks file for java_8
+
+- name: Install java-1.8
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - java-1.8.0-openjdk
+    - java-1.8.0-openjdk-devel
+  when: 
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"

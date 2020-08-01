@@ -1,0 +1,18 @@
+[Unit]
+Description=Memcached-Exporter
+Documentation=https://github.com/prometheus/memcached_exporter.git
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/local/bin/memcached_exporter \
+  --memcached.address=11211
+SyslogIdentifier=memcached_exporter
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

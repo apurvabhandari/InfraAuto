@@ -1,0 +1,14 @@
+cluster.name: {{ CLUSTER_NAME }}
+network.host: [{{ ansible_default_ipv4.address }}, _local_]
+node.name: {{ ansible_hostname }}
+path.data: /var/lib/elasticsearch
+path.logs: /var/log/elasticsearch
+discovery.zen.ping.unicast.hosts: ["{{ hostvars.values()|map(attribute='ansible_host')|join('", "') }}"]
+discovery.zen.minimum_master_nodes: {{ MIN_MASTER_NODES }}
+{% if ROLE|string() == hostvars[inventory_hostname]['type']|string() %}
+node.master: true
+node.data: false
+{% else %}
+node.master: false
+node.data: true
+{% endif %}

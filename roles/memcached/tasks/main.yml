@@ -1,0 +1,38 @@
+---
+# tasks file for memcached
+- name: Install memcached
+  yum:
+    name: memcached
+    state: present
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Configure memcached
+  template:
+    src: memcached.j2
+    dest: /etc/sysconfig/memcached
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - restart-memcached
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Start service memcached, if not started
+  service:
+    name: memcached
+    state: started
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Enable service memcached, and not touch the state
+  service:
+    name: memcached
+    enabled: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"

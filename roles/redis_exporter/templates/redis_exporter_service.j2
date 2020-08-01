@@ -1,0 +1,22 @@
+[Unit]
+Description=Redis-Exporter
+Documentation=https://github.com/oliver006/redis_exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecReload=/bin/kill -HUP 
+
+{% if CLUSTER_MODE is defined and variable is sameas true %}
+ExecStart=/usr/local/bin/redis_exporter --log-format=txt --namespace=redis --web.listen-address=:9121 --redis.addr={{ansible_default_ipv4.address}}:6379,{{ansible_default_ipv4.address}}:6380 --redis.password={{REDIS_PASSWORD}} --web.telemetry-path=/metrics
+{% else %}
+ExecStart=/usr/local/bin/redis_exporter --log-format=txt --namespace=redis --web.listen-address=:9121 --redis.addr={{ansible_default_ipv4.address}}:6379 --redis.password={{REDIS_PASSWORD}} --web.telemetry-path=/metrics
+{% endif %}
+SyslogIdentifier=redis_exporter
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

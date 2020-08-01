@@ -1,0 +1,112 @@
+---
+# tasks file for redis_cluster
+- name: Install Epel Repo
+  yum:
+    name: epel-release
+    state: present
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Install redis repo
+  yum:
+    name: http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+    state: present
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Install redis
+  yum:
+    name: redis
+    enablerepo: remi
+    state: present
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Create a directory if it does not exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: redis
+    group: redis
+  loop:
+    - /etc/redis
+    - /var/log/redis
+
+- name: Configure Redis-6379
+  template:
+    src: redis6379.j2
+    dest: /etc/redis/redis_6379.conf
+    owner: redis
+    group: redis
+    mode: '0644'
+  notify:
+    - restart-redis-6379
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Configure Redis-6380
+  template:
+    src: redis6380.j2
+    dest: /etc/redis/redis_6380.conf
+    owner: redis
+    group: redis
+    mode: '0644'
+  notify:
+    - restart-redis-6380
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Configure Redis-6379 Systemd
+  template:
+    src: redisservice6379.j2
+    dest: /etc/systemd/system/multi-user.target.wants/redis6379.service
+    owner: redis
+    group: redis
+    mode: '0644'
+  notify:
+    - restart-redis-6379
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Configure Redis-6380 Systemd
+  template:
+    src: redisservice6380.j2
+    dest: /etc/systemd/system/multi-user.target.wants/redis6380.service
+    owner: redis
+    group: redis
+    mode: '0644'
+  notify:
+    - restart-redis-6380
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Just force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Start service redis6379, if not started
+  service:
+    name: redis6379
+    state: started
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Start service redis6380, if not started
+  service:
+    name:  redis6380
+    state: started
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"

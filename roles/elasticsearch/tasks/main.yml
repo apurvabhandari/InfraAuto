@@ -1,0 +1,115 @@
+---
+# tasks file for elasticsearch
+
+- name: Install java-1.8
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - java-1.8.0-openjdk
+    - java-1.8.0-openjdk-devel
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- rpm_key:
+    state: present
+    key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Add ElasticSearch Yum Repository
+  yum_repository:
+    name: elasticsearch
+    description: Elasticsearch repository for 6.x packages
+    baseurl: https://artifacts.elastic.co/packages/6.x/yum
+    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    gpgcheck: yes
+    enabled: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Install elasticsearch
+  yum:
+    name: elasticsearch
+    state: present
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Just force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Create a directory if it does not exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: elasticsearch
+    group: elasticsearch
+  loop:
+    - "{{ LOG_PATH }}"
+    - "{{ DATA_PATH }}"
+
+- name: Configure elasticsearch
+  template:
+    src: elasticsearch.j2
+    dest: /etc/elasticsearch/elasticsearch.yml
+    owner: elasticsearch
+    group: elasticsearch
+    mode: '0644'
+  notify:
+    - restart-elasticsearch
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Configure JVM MIN
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    regexp: '^-Xms'
+    line: "{{ JVM_MIN }}"
+    owner: elasticsearch
+    group: elasticsearch
+    mode: '0644'
+  notify:
+    - restart-elasticsearch
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Configure JVM MAX
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    regexp: '^-Xmx'
+    line: "{{ JVM_MAX }}"
+    owner: elasticsearch
+    group: elasticsearch
+    mode: '0644'
+  notify:
+    - restart-elasticsearch
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Start service elasticsearch, if not started
+  service:
+    name: elasticsearch
+    state: started
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Enable service elasticsearch, and not touch the state
+  service:
+    name: elasticsearch
+    enabled: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"

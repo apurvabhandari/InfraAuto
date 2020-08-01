@@ -1,0 +1,60 @@
+---
+# tasks file for consul_exporter
+- name: Unarchive a file that needs to be downloaded
+  unarchive:
+    src: https://github.com/prometheus/consul_exporter/releases/download/v0.6.0/consul_exporter-0.6.0.linux-amd64.tar.gz
+    dest: /tmp/
+    #list_files: true
+    remote_src: yes
+  register: result
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Copy consul_exporter binary to PATH
+  copy:
+    src: /tmp/consul_exporter-0.6.0.linux-amd64/consul_exporter
+    dest: /usr/local/bin/consul_exporter
+    owner: root
+    group: root
+    mode: '0755'
+    remote_src: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Copy consul_exporter Systemd
+  copy:
+    src: consul_exporter.service
+    dest: /etc/systemd/system/consul_exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - restart-consul-exporter
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Just force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Start service consul exporter, if not started
+  service:
+    name: consul_exporter
+    state: started
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Enable service consul exporter, and not touch the state
+  service:
+    name: consul_exporter
+    enabled: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
