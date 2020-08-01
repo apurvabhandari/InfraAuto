@@ -1,0 +1,15 @@
+---
+  - name: Memcached Exporter Configuration
+    hosts: all
+    become: yes
+    become_user: root
+    remote_user: hrishikesh
+    roles:
+      - { role: iptables }
+      - { role: packages }
+      - { role: memcached_exporter }
+    handlers:
+    - name: restart-memcached-exporter
+      service:
+        name: memcached_exporter
+        state: restarted

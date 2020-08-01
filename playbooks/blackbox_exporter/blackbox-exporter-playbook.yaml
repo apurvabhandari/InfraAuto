@@ -1,0 +1,15 @@
+---
+  - name: BlackBox Exporter Configuration
+    hosts: all
+    become: yes
+    become_user: root
+    remote_user: hrishikesh
+    roles:
+      - { role: iptables }
+      - { role: packages }
+      - { role: blackbox_exporter }
+    handlers:
+    - name: restart-blackbox-exporter
+      service:
+        name: blackbox_exporter
+        state: restarted

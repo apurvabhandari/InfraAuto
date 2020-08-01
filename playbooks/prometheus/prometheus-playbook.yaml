@@ -1,0 +1,15 @@
+---
+  - name: Prometheus Configuration
+    hosts: all
+    become: yes
+    become_user: root
+    remote_user: hrishikesh
+    roles:
+      - { role: iptables }
+      - { role: packages }
+      - { role: prometheus }
+    handlers:
+    - name: restart-prometheus
+      service:
+        name: prometheus
+        state: restarted

@@ -1,0 +1,21 @@
+---
+  - name: Redis Cluster Configuration
+    hosts: all
+    become: yes
+    become_user: root
+    remote_user: hrishikesh
+    roles:
+      - { role: iptables }
+      - { role: packages }
+      - { role: redis_cluster }
+    handlers:
+    - name: restart-redis-6379
+      service:
+        name: redis6379
+        state: restarted
+    - name: restart-redis-6380
+      service:
+        name: redis6380
+        state: restarted
+    vars:
+      MASTER_PASSWORD: PASSWORD

@@ -1,0 +1,5 @@
+[consul_server]
+host1 ansible_host=10.0.0.44 type=master
+
+[consul_client]
+host2 ansible_host=10.0.0.76 type=slave

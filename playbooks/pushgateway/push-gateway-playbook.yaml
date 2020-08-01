@@ -1,0 +1,15 @@
+---
+  - name: Push Gateway Configuration
+    hosts: all
+    become: yes
+    become_user: root
+    remote_user: hrishikesh
+    roles:
+      - { role: iptables }
+      - { role: packages }
+      - { role: pushgateway }
+    handlers:
+    - name: restart-push-gateway
+      service:
+        name: pushgateway
+        state: restarted

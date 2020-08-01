@@ -1,0 +1,15 @@
+---
+  - name: Rabbitmq Exporter Configuration
+    hosts: all
+    become: yes
+    become_user: root
+    remote_user: hrishikesh
+    roles:
+      - { role: iptables }
+      - { role: packages }
+      - { role: rabbitmq_exporter }
+    handlers:
+    - name: restart-rabbitmq-exporter
+      service:
+        name: rabbitmq_exporter
+        state: restarted

@@ -1,0 +1,21 @@
+---
+  - name: Consul Configuration
+    hosts: all
+    become: yes
+    become_user: root
+    remote_user: hrishikesh
+    roles:
+      - { role: iptables }
+      - { role: packages }
+      - { role: consul }
+    handlers:
+    - name: restart-consul
+      service:
+        name: consul
+        state: restarted
+    vars:
+      ENCRYPTION_KEY: "YOUR_CONSUL_KEY"
+      ROLE: master
+      DATACENTER: dc1
+      CONSUL_SERVER_IP: YOUR_CONSUL_IP # IF YOU WANT TO CONFIGURE CLIENT ONLY THEN SPECIFY THIS VAR
+      NODECOUNT: "{{ groups['consul_server'] | length }}"

@@ -1,0 +1,4 @@
+[hosts]
+host1 ansible_host=10.0.0.44
+host1 ansible_host=10.0.0.76
+host1 ansible_host=10.0.0.50

@@ -1,0 +1,23 @@
+---
+  - name: ElasticSearch Cluster Configuration
+    hosts: all
+    become: yes
+    become_user: root
+    remote_user: hrishikesh
+    roles:
+      - { role: iptables }
+      - { role: packages }
+      - { role: elasticsearch }
+    handlers:
+    - name: restart-elasticsearch
+      service:
+        name: elasticsearch
+        state: restarted
+    vars:
+      CLUSTER_NAME: CLUSTERNAME
+      MIN_MASTER_NODES: 1
+      ROLE: master # Do not change this.
+      JVM_MIN: -Xms256m
+      JVM_MAX: -Xmx256m
+      LOG_PATH: /var/log/elasticsearch
+      DATA_PATH: /var/lib/elasticsearch

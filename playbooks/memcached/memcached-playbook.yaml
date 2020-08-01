@@ -1,0 +1,19 @@
+---
+  - name: Memcached Configuration
+    hosts: all
+    become: yes
+    become_user: root
+    remote_user: hrishikesh
+    roles:
+      - { role: iptables }
+      - { role: packages }
+      - { role: memcached }
+    handlers:
+    - name: restart-memcached
+      service:
+        name: memcached
+        state: restarted
+    vars:
+      MEMCACHED_PORT: 11211
+      MAXCONN: 1024
+      CACHESIZE: 64

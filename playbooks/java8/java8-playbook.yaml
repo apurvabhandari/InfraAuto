@@ -1,0 +1,10 @@
+---
+  - name: Java 8 Instaallation
+    hosts: all
+    become: yes
+    become_user: root
+    remote_user: hrishikesh
+    roles:
+      - { role: iptables }
+      - { role: packages }
+      - { role: java_8 }

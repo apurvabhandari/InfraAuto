@@ -1,0 +1,15 @@
+---
+  - name: Consul Exporter Configuration
+    hosts: all
+    become: yes
+    become_user: root
+    remote_user: hrishikesh
+    roles:
+      - { role: iptables }
+      - { role: packages }
+      - { role: consul_exporter }
+    handlers:
+    - name: restart-consul-exporter
+      service:
+        name: consul_exporter
+        state: restarted
