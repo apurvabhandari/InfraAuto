@@ -1,0 +1,10 @@
+[Unit]
+Description=PushGateway
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/pushgateway
+
+[Install]
+WantedBy=default.target

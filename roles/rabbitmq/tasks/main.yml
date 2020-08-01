@@ -1,0 +1,96 @@
+---
+# tasks file for rabbitmq
+
+- name: Install epel Repo
+  yum:
+    name: epel-release
+    state: present
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Install Erlang RPM
+  yum:
+    name: http://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm
+    state: present
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Install Erlang
+  yum:
+    name:
+      - erlang*
+      - socat
+      - logrotate
+    state: present
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- rpm_key:
+    key: https://www.rabbitmq.com/rabbitmq-signing-key-public.asc
+    state: present
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Install Rabbitmq
+  yum:
+    name: https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.9/rabbitmq-server-3.7.9-1.el7.noarch.rpm
+    state: present
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Start Rabbitmq Service
+  service:
+    name: rabbitmq-server
+    enabled: yes
+    state: started
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Create rabbitmq admin user
+  rabbitmq_user:
+    user: "{{ ADMIN_USER }}"
+    password: "{{ ADMIN_PASSWORD }}"
+    vhost: /
+    configure_priv: .*
+    read_priv: .*
+    write_priv: .*
+    update_password: always
+    tags: administrator
+    state: present
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Enable every plugin in list with existing plugins
+  rabbitmq_plugin:
+    names: rabbitmq_management,rabbitmq_management_visualiser,rabbitmq_shovel,rabbitmq_shovel_management,prometheus_rabbitmq_exporter
+    state: enabled
+    new_only: 'yes'
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Create rabbitmq configuration file
+  file:
+    path: /etc/rabbitmq
+    state: directory
+    mode: '0755'
+
+- name: Allow guest user to access from other machines
+  template:
+    src: rabbitmq.j2
+    dest: /etc/rabbitmq/rabbitmq.config
+    owner: rabbitmq
+    group: rabbitmq
+    mode: '0644'
+  notify:
+    - restart-rabbitmq
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"

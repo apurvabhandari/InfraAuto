@@ -1,0 +1,59 @@
+---
+# tasks file for rabbitmq_exporter---
+- name: Unarchive a file that needs to be downloaded
+  unarchive:
+    src: https://github.com/kbudde/rabbitmq_exporter/releases/download/v0.29.0/rabbitmq_exporter-0.29.0.linux-amd64.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  register: result
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Copy rabbitmq_exporter binary to PATH
+  copy:
+    src: /tmp/rabbitmq_exporter-0.29.0.linux-amd64/rabbitmq_exporter
+    dest: /usr/local/bin/rabbitmq_exporter
+    owner: root
+    group: root
+    mode: '0755'
+    remote_src: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Copy rabbitmq_exporter Systemd
+  copy:
+    src: rabbitmq_exporter.service
+    dest: /etc/systemd/system/rabbitmq_exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - restart-rabbitmq-exporter
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Just force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Start service rabbitmq exporter, if not started
+  service:
+    name: rabbitmq_exporter
+    state: started
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
+
+- name: Enable service rabbitmq exporter, and not touch the state
+  service:
+    name: rabbitmq_exporter
+    enabled: yes
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"

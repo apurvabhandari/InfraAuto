@@ -1,0 +1,18 @@
+---
+# tasks file for packages
+
+- name: Install required packages
+  yum:
+    name:
+      - telnet
+      - wget
+      - curl
+      - psmisc
+      - nmap
+      - git
+      - zip
+      - unzip
+    state: present
+  when:
+    - ansible_facts['distribution'] == "CentOS"
+    - ansible_facts['distribution_major_version'] == "7"
