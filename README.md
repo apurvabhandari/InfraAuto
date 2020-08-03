@@ -44,3 +44,7 @@
       How to run<br>
       ansible-playbook PLAYBOOK_NAME -i INVENTORY_NAME<br>
       ansible-playbook playbooks/elasticsearch/elasticsearch-playbook.yaml -i host_file<br>
+
+
+## LICENSE
+[Apache License 2.0](./LICENSE)
