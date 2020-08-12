@@ -1,5 +1,16 @@
-# DevOps Automation 
-## Ansible
+# DevOps Automation
+
+[![Generic badge](https://img.shields.io/badge/SUBJECT-DevOps_Automation-Blue.svg)](https://shields.io/)
+![Watchers](https://img.shields.io/github/watchers/apurvabhandari/DevOps?style=social)
+![last commit](https://img.shields.io/github/last-commit/apurvabhandari/DevOps)
+
+## Infrastructure Automation
+## Terraform
+- Create EC2
+- Create vpc
+- Create variables
+
+### Ansible
 - [EC2 Creation with Ansible](./AWS-EC2-creation-ansible-playbook.md)
 - [Lamp Stack installation with Ansible](./lamp-stack-ansible-playbook.md)
 - Roles and Playbook
@@ -45,3 +56,13 @@
       ansible-playbook PLAYBOOK_NAME -i INVENTORY_NAME<br>
       ansible-playbook playbooks/elasticsearch/elasticsearch-playbook.yaml -i host_file<br>
 
+
+### Creator
+
+- [Apurva Bhandari](https://www.linkedin.com/in/apurvabhandari-linux/)
+- [![Twitter URL](https://img.shields.io/twitter/follow/Apurv_Bhandari?style=social)](https://twitter.com/Apurv_Bhandari)
+
+
+Last Updated: August 7, 2020
+### LICENSE
+[Apache License 2.0](./LICENSE)
