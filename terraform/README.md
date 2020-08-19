@@ -1,3 +1,3 @@
 # Terraform
-- aws web server
-- gcp web server
+- [aws web server](aws/web_server)
+- [gcp web server](gcp/webserver)
