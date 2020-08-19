@@ -6,9 +6,7 @@
 
 ## Infrastructure Automation
 ## Terraform
-- Create EC2
-- Create vpc
-- Create variables
+- [Terraform](./Terraform/README.md)
 
 ### Ansible
 - [EC2 Creation with Ansible](./AWS-EC2-creation-ansible-playbook.md)
