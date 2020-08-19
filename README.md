@@ -60,7 +60,5 @@
 - [Apurva Bhandari](https://www.linkedin.com/in/apurvabhandari-linux/)
 - [![Twitter URL](https://img.shields.io/twitter/follow/Apurv_Bhandari?style=social)](https://twitter.com/Apurv_Bhandari)
 
-
-Last Updated: August 7, 2020
 ### LICENSE
 [Apache License 2.0](./LICENSE)
