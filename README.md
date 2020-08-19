@@ -6,7 +6,7 @@
 
 ## Infrastructure Automation
 ## Terraform
-- [Terraform](./Terraform/README.md)
+- [Terraform](./terraform/README.md)
 
 ### Ansible
 - [EC2 Creation with Ansible](./AWS-EC2-creation-ansible-playbook.md)
